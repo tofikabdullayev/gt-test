@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { delay, filter } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { concatMap, delay, filter } from 'rxjs/operators';
 import { Task } from './interfaces';
 import { reverseAlphabet } from './utils';
 
@@ -32,7 +32,7 @@ export class DataService {
     this.pendingTasks
       .pipe(
         filter((v) => !!v),
-        delay(timeout * 1000)
+        concatMap((task) => of(task).pipe(delay(timeout * 1000)))
       )
       .subscribe((task: Task) => {
         this.saveTask(task);

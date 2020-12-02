@@ -21,6 +21,7 @@ import { Task } from '../interfaces';
           </div>
         </div>
       </form>
+      <app-loader *ngIf="loading"></app-loader>
     </div>
   `,
   styles: [
@@ -33,7 +34,7 @@ import { Task } from '../interfaces';
 })
 export class CreateTaskComponent implements OnInit {
   constructor() {}
-
+  loading = false;
   label = '';
   tasks: Task[] = [];
 
@@ -46,16 +47,22 @@ export class CreateTaskComponent implements OnInit {
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
+      this.loading = true;
       this.createTask(form.value.label);
     }
   }
 
   private createTask(label: string): void {
-    this.tasks.push({
-      id: new Date().toISOString(),
-      label,
-      completed: false,
-    });
-    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    const timeout = Math.floor(Math.random() * 9) + 5;
+    setTimeout(() => {
+      this.tasks.push({
+        id: new Date().toISOString(),
+        label,
+        completed: false,
+      });
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      this.label = '';
+      this.loading = false;
+    }, timeout * 1000);
   }
 }

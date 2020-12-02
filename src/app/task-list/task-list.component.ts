@@ -6,6 +6,7 @@ import { Task } from '../interfaces';
   template: `
     <div class="row">
       <div class="col s12">
+        <p *ngIf="tasks.length === 0">No tasks</p>
         <div
           class="task"
           *ngFor="let task of tasks"

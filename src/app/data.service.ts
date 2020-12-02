@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { concatMap, delay, filter } from 'rxjs/operators';
 import { Task } from './interfaces';
-import { reverseAlphabet } from './utils';
+import { reverseAlphabet, randomIntFromInterval } from './utils';
 
 @Injectable({
   providedIn: 'root',
@@ -28,11 +28,12 @@ export class DataService {
     if (tasks) {
       this._tasks = JSON.parse(tasks);
     }
-    const timeout = Math.floor(Math.random() * 9) + 5;
     this.pendingTasks
       .pipe(
         filter((v) => !!v),
-        concatMap((task) => of(task).pipe(delay(timeout * 1000)))
+        concatMap((task) =>
+          of(task).pipe(delay(randomIntFromInterval(5, 10) * 1000))
+        )
       )
       .subscribe((task: Task) => {
         this.saveTask(task);

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Task } from '../interfaces';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-create-task',
@@ -21,7 +21,7 @@ import { Task } from '../interfaces';
           </div>
         </div>
       </form>
-      <app-loader *ngIf="loading"></app-loader>
+      <app-loader *ngIf="dataService.loading"></app-loader>
     </div>
   `,
   styles: [
@@ -32,37 +32,13 @@ import { Task } from '../interfaces';
     `,
   ],
 })
-export class CreateTaskComponent implements OnInit {
-  constructor() {}
-  loading = false;
+export class CreateTaskComponent {
+  constructor(public dataService: DataService) {}
   label = '';
-  tasks: Task[] = [];
-
-  ngOnInit(): void {
-    const tasks = localStorage.getItem('tasks');
-    if (tasks) {
-      this.tasks = JSON.parse(tasks);
-    }
-  }
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      this.loading = true;
-      this.createTask(form.value.label);
+      this.dataService.createTask(form.value.label);
     }
-  }
-
-  private createTask(label: string): void {
-    const timeout = Math.floor(Math.random() * 9) + 5;
-    setTimeout(() => {
-      this.tasks.push({
-        id: new Date().toISOString(),
-        label,
-        completed: false,
-      });
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-      this.label = '';
-      this.loading = false;
-    }, timeout * 1000);
   }
 }

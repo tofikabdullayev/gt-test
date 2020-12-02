@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { delay, filter } from 'rxjs/operators';
 import { Task } from './interfaces';
+import { reverseAlphabet } from './utils';
 
 @Injectable({
   providedIn: 'root',
@@ -9,17 +10,7 @@ import { Task } from './interfaces';
 export class DataService {
   private _tasks: Task[] = [];
   get tasks(): Task[] {
-    return this._tasks.sort((a, b) => {
-      const labelA = a.label.toLowerCase();
-      const labelB = b.label.toLowerCase();
-      if (labelA < labelB) {
-        return 1;
-      }
-      if (labelA > labelB) {
-        return -1;
-      }
-      return 0;
-    });
+    return this._tasks.sort((a, b) => reverseAlphabet(a, b));
   }
 
   private _loading = false;
@@ -30,7 +21,7 @@ export class DataService {
     this._loading = value;
   }
 
-  private pendingTasks = new BehaviorSubject<Task>(null);
+  private pendingTasks = new Subject<Task>();
 
   constructor() {
     const tasks = localStorage.getItem('tasks');
@@ -43,7 +34,7 @@ export class DataService {
         filter((v) => !!v),
         delay(timeout * 1000)
       )
-      .subscribe((task) => {
+      .subscribe((task: Task) => {
         this.saveTask(task);
       });
   }
